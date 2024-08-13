@@ -1,0 +1,238 @@
+.sidebar-link svg {
+    height: 20px;
+}
+
+.sidebar-link path {
+    fill: #ccc;
+}
+
+.sidebar-link span {
+    font-size: 16px;
+    font-weight: 400;
+    color: #999;
+}
+
+.actived .sidebar-link span {
+    font-weight: 500;
+    color: #14425d;
+}
+
+.actived .sidebar-link path {
+    fill: #14425d;
+}
+
+.actived .sidebar-link {
+    position: relative;
+}
+
+.actived .sidebar-link::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    top: 0;
+    right: 0;
+    background-color: #14425d;
+}
+
+.sidebar-logo {
+    background-color: #14425d;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.statistic-number {
+    font-size: 24px;
+    margin-left: 20px;
+    font-weight: 500;
+    color: #666;
+    height: 100%;
+}
+
+.statistic-number small {
+    font-size: 16px;
+    color: #999
+}
+
+.statistic-label {
+    font-size: 16px;
+    font-weight: 400;
+    color: #999;
+}
+
+.input-search {
+    font-size: 14px;
+    font-style: italic;
+    color: #666;
+}
+
+.input-search::placeholder {
+    color: #ccc
+}
+
+.icon-search {
+    margin-left: 10px;
+    padding: 4px;
+    box-sizing: unset;
+    border: none;
+    background-color: transparent;
+}
+
+.add-btn {
+    background-color: #388e3c;
+    color: #fff;
+    border-radius: 4px;
+    border: none;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 4px 8px;
+}
+
+.add-btn svg {
+    margin-right: 4px;
+    height: 16px;
+}
+
+.option-btn {
+    height: 100%;
+    border: unset;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
+
+.category-order-label {
+    font-weight: 500;
+}
+
+.category-button {
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: unset;
+    border-radius: 4px;
+    padding: unset;
+    background-color: transparent;
+}
+
+.category-button svg {
+    height: 8px;
+}
+
+.category-button:hover {
+    background-color: rgba(0, 0, 0, .05);
+
+}
+
+.table-scope span {
+    overflow: auto;
+    text-wrap: nowrap;
+    margin-right: 20px;
+    width: 95px;
+    display: block;
+}
+
+.table-scope--small span {
+    width: 150px;
+}
+
+.table-scope span::-webkit-scrollbar {
+    height: 2px;
+    background-color: #000 !important;
+}
+
+.table-scope span::-webkit-scrollbar-thumb {
+    height: 2px;
+    background-color: #14425d80;
+    border-radius: 2px;
+}
+
+/* ::-webkit-scrollbar {
+    width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #000;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+td small {
+    color: #999;
+    font-size: 12px;
+}
+
+.option-btn {
+    /* width: 10px; */
+    padding: 4px
+}
+
+.back-btn {
+    background-color: #14425d;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #fff;
+    padding: 4px 8px;
+}
+
+.table-img {
+    height: 80px;
+}
+
+.delete-btn {
+    background-color: rgb(164, 0, 0, 0.5);
+    color: #fff;
+    border: unset;
+    width: 50px;
+    font-size: 30px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:hover {
+    background-color: red;
+}
+
+.add-category-btn {
+    background-color: #f2f2f2;
+    color: #bbb;
+    border: unset;
+    /* width: 50px; */
+    font-size: 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-category-btn:hover {
+    /* background-color: #388e3c; */
+    opacity: 0.5;
+}
+
+.category-margin-custom {
+    margin-top: 10px;
+}
+
+.category-margin-custom:last-of-type {
+    margin-bottom: unset;
+}
+
+.preview-img {
+    max-height: 200px;
+}
