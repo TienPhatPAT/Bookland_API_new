@@ -80,9 +80,6 @@ routerAuth.get("/profile", authMiddleware, async (req, res) => {
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  // host: "smtp.ethereal.email",
-  // port: 587,
-  // secure: false,
   auth: {
     user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSWORD,
