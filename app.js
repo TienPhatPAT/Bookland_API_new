@@ -16,6 +16,7 @@ const routerChiTietDonHang = require("./routes/ChiTietDonHang.js");
 const routerSachYeuThich = require("./routes/SachYeuThich.js");
 const routerTimKiem = require("./routes/TimKiem.js");
 const routerLuotTim = require("./routes/LuotTim.js");
+const routerThanhToan = require("./routes/Thanhtoan.js");
 var express = require("express");
 var path = require("path");
 
@@ -25,6 +26,7 @@ var createError = require("http-errors");
 var cookieParser = require("cookie-parser");
 
 const mongoose = require("mongoose");
+
 mongoose
   .connect(process.env.DB_URL) // Link đến DB_URL trong file .env
   // .connect("mongodb://localhost:27017/Bookland")
@@ -69,6 +71,7 @@ app.use("/api/chitietdonhang", routerChiTietDonHang);
 app.use("/api/sachyeuthich", routerSachYeuThich);
 app.use("/api/timkiem", routerTimKiem);
 app.use("/api/luottim", routerLuotTim);
+app.use("/api/thanhtoan", routerThanhToan);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

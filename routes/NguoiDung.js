@@ -222,29 +222,35 @@ routerNguoiDung.put("/:id", adminMiddleware, async function (req, res, next) {
 });
 
 // Xóa người dùng bình thường
-routerNguoiDung.delete(
-  "/:id",
-  adminMiddleware,
-  async function (req, res, next) {
-    try {
-      const { id } = req.params;
-      const NguoiDung = await NguoiDungModel.findById(id);
+routerNguoiDung.delete("/:id", adminMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
 
-      if (!NguoiDung || NguoiDung.loaitaikhoan !== 0) {
-        return res.status(404).json({
-          status: false,
-          message:
-            "Người dùng không tồn tại hoặc không phải người dùng bình thường",
-        });
-      }
+    // Tìm người dùng theo ID
+    const nguoiDung = await NguoiDungModel.findById(id);
 
-      await NguoiDungModel.deleteOne({ _id: id });
-      res.json({ status: true, message: "Xóa người dùng thành công" });
-    } catch (error) {
-      console.error("Lỗi khi xóa người dùng:", error);
-      res.json({ status: false, message: "Xóa người dùng thất bại" });
+    // Kiểm tra xem người dùng có tồn tại và là người dùng bình thường không
+    if (!nguoiDung || nguoiDung.loaitaikhoan !== 0) {
+      return res.status(404).json({
+        status: false,
+        message:
+          "Người dùng không tồn tại hoặc không phải là người dùng bình thường.",
+      });
     }
+
+    // Xóa người dùng
+    await NguoiDungModel.deleteOne({ _id: id });
+    return res.status(200).json({
+      status: true,
+      message: "Xóa người dùng thành công.",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xóa người dùng:", error);
+    return res.status(500).json({
+      status: false,
+      message: "Xóa người dùng thất bại. Vui lòng thử lại.",
+    });
   }
-);
+});
 
 module.exports = routerNguoiDung;

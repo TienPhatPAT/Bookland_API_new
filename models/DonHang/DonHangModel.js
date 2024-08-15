@@ -19,6 +19,7 @@ const DonHangSchema = new Schema(
     },
     nguoinhan: {
       type: String,
+      required: true,
     },
     phuongthucthanhtoan: {
       type: Number,
@@ -27,15 +28,17 @@ const DonHangSchema = new Schema(
     },
     ghichu: {
       type: String,
+      default: "",
     },
     ngaydathang: {
       type: Date,
-      required: true,
+      default: Date.now,
     },
     status: {
       type: Number,
       required: true,
       enum: [0, 1, 2, 3, 4], // 0: chờ duyệt, 1: đang giao hàng, 2: đã giao hàng, 3: hủy, 4: trả hàng
+      default: "0",
     },
     thanhtoan: {
       type: Number,

@@ -1,12 +1,41 @@
-const BannerModel = require("../models/Banner/BannerModel.js");
 const express = require("express");
+const BannerModel = require("../models/Banner/BannerModel.js");
 
 const routerBanner = express.Router();
 
-// Thêm banner
-routerBanner.post("/add", async (req, res) => {
-  const { url, image, ngaybatdau, ngayketthuc, uutien, hien_thi } = req.body;
+// Lấy danh sách tất cả các banner
+routerBanner.get("/", async (req, res) => {
   try {
+    const banners = await BannerModel.find();
+    res.json({ success: true, data: banners });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách banner:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
+  }
+});
+
+// Lấy thông tin một banner theo ID
+routerBanner.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const banner = await BannerModel.findById(id);
+    if (!banner) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Banner không tồn tại" });
+    }
+    res.json({ success: true, data: banner });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin banner:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
+  }
+});
+
+// Thêm mới một banner
+routerBanner.post("/", async (req, res) => {
+  try {
+    const { url, image, ngaybatdau, ngayketthuc, uutien, hien_thi } = req.body;
+
     const newBanner = new BannerModel({
       url,
       image,
@@ -15,74 +44,66 @@ routerBanner.post("/add", async (req, res) => {
       uutien,
       hien_thi,
     });
+
     await newBanner.save();
-    res.json({ status: 1, message: "Thêm banner thành công" });
-  } catch (err) {
-    console.error("Lỗi khi thêm sách:", err);
-    res.status(500).json({ status: 0, message: "Thêm banner thất bại" });
+    res.json({
+      success: true,
+      message: "Thêm banner thành công",
+      data: newBanner,
+    });
+  } catch (error) {
+    console.error("Lỗi khi thêm banner:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
   }
 });
 
-// Sửa banner
+// Sửa thông tin một banner
 routerBanner.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { url, image, ngaybatdau, ngayketthuc, uutien, hien_thi } = req.body;
+  const { url, image, luotclick, ngaybatdau, ngayketthuc, uutien, hien_thi } =
+    req.body;
+
   try {
     const updatedBanner = await BannerModel.findByIdAndUpdate(
       id,
-      {
-        url,
-        image,
-        ngaybatdau,
-        ngayketthuc,
-        uutien,
-        hien_thi,
-      },
+      { url, image, luotclick, ngaybatdau, ngayketthuc, uutien, hien_thi },
       { new: true }
     );
-    res.status(200).json(updatedBanner);
+
+    if (!updatedBanner) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Banner không tồn tại" });
+    }
+
+    res.json({
+      success: true,
+      message: "Sửa banner thành công",
+      data: updatedBanner,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Lỗi khi sửa banner:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
   }
 });
 
-// Xóa banner
+// Xóa một banner
 routerBanner.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  try {
-    await BannerModel.findByIdAndDelete(id);
-    res.status(200).json({ message: "Banner đã được xóa" });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
 
-// Lấy danh sách banner
-routerBanner.get("/list", async (req, res) => {
-  const currentDate = new Date();
   try {
-    const banners = await BannerModel.find({
-      ngaybatdau: { $lte: currentDate },
-      ngayketthuc: { $gte: currentDate },
-      hien_thi: true,
-    });
-    res.status(200).json(banners);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+    const deletedBanner = await BannerModel.findByIdAndDelete(id);
 
-// get banner by id
-routerBanner.get("/list/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const banner = await BannerModel.findById(id);
-    if (!banner) {
-      return res.status(404).json({ message: "Banner không tồn tại" });
+    if (!deletedBanner) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Banner không tồn tại" });
     }
-    res.status(200).json(banner);
+
+    res.json({ success: true, message: "Xóa banner thành công" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Lỗi khi xóa banner:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
   }
 });
 
