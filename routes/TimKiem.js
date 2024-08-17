@@ -12,7 +12,14 @@ function removeDiacritics(text) {
   return diacritics.remove(text);
 }
 
-// Route tìm kiếm
+// Cấu hình Fuse.js cho việc tìm kiếm
+const fuseOptions = {
+  includeScore: true,
+  threshold: 0.3,
+  keys: ["tenNormalized"], // Tìm kiếm trên trường tên đã loại bỏ dấu
+};
+
+// Route tìm kiếm tổng hợp
 routerTimKiem.get("/", async (req, res) => {
   try {
     const { text } = req.query;
@@ -26,9 +33,11 @@ routerTimKiem.get("/", async (req, res) => {
     // Loại bỏ dấu
     const normalizedText = removeDiacritics(text);
 
+    // Lấy dữ liệu từ các bộ sưu tập
     const sach = await Sach.find({}).lean();
     const tacgia = await Tacgia.find({}).lean();
 
+    // Tạo trường tên đã loại bỏ dấu cho sách và tác giả
     sach.forEach((book) => {
       book.tenNormalized = removeDiacritics(book.ten);
     });
@@ -37,42 +46,42 @@ routerTimKiem.get("/", async (req, res) => {
       author.tenNormalized = removeDiacritics(author.ten);
     });
 
-    const fusesach = new Fuse(sach, {
-      keys: ["tenNormalized"],
-      includeScore: true,
-      threshold: 0.3,
+    // Tạo Fuse instances
+    const fusesach = new Fuse(sach, fuseOptions);
+    const fusetacgia = new Fuse(tacgia, fuseOptions);
+
+    // Tìm kiếm sách và tác giả
+    const bookResults = fusesach.search(normalizedText);
+    const authorResults = fusetacgia.search(normalizedText);
+
+    // Chuẩn bị kết quả tìm kiếm
+    const results = [];
+
+    // Đẩy kết quả sách vào mảng kết quả
+    bookResults.forEach((result) => {
+      results.push({
+        id: result.item._id,
+        type: "sach",
+        ten: result.item.ten,
+        score: result.score, // Điểm tương đồng của Fuse.js
+      });
     });
 
-    const fusetacgia = new Fuse(tacgia, {
-      keys: ["tenNormalized"],
-      includeScore: true,
-      threshold: 0.3,
+    // Đẩy kết quả tác giả vào mảng kết quả
+    authorResults.forEach((result) => {
+      results.push({
+        id: result.item._id,
+        type: "tacgia",
+        ten: result.item.ten,
+        score: result.score, // Điểm tương đồng của Fuse.js
+      });
     });
 
-    // Tìm kiếm sách
-    const bookResults = fusesach
-      .search(normalizedText)
-      .map((result) => result.item);
-
-    // Tìm kiếm tác giả
-    const authorResults = fusetacgia
-      .search(normalizedText)
-      .map((result) => result.item);
-
-    // Lấy id và tên sách
-    const bookNames = bookResults.map((book) => ({
-      id: book._id,
-      ten: book.ten,
-    }));
-
-    // Lấy id và tên tác giả
-    const authorNames = authorResults.map((author) => ({
-      id: author._id,
-      ten: author.ten,
-    }));
+    // Sắp xếp kết quả theo điểm số (score)
+    results.sort((a, b) => a.score - b.score);
 
     // Đếm số lượng kết quả
-    const count = bookNames.length + authorNames.length;
+    const count = results.length;
 
     if (count === 0) {
       return res.status(404).json({
@@ -95,8 +104,8 @@ routerTimKiem.get("/", async (req, res) => {
       });
     }
 
-    // Trả về id và tên sách và tác giả
-    res.json({ count, sach: bookNames, tacgia: authorNames });
+    // Trả về kết quả tìm kiếm
+    res.json({ count, results });
   } catch (error) {
     console.error("Lỗi:", error);
     res.status(500).json({ message: error.message });
