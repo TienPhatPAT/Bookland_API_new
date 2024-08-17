@@ -68,18 +68,18 @@ const NguoiDungSchema = new Schema({
   resetPasswordExpires: Date,
 });
 
-NguoiDungSchema.pre("save", async function (next) {
-  if (!this.isModified("matkhau")) {
-    return next();
-  }
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.matkhau = await bcrypt.hash(this.matkhau, salt);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
+// NguoiDungSchema.pre("save", async function (next) {
+//   if (!this.isModified("matkhau")) {
+//     return next();
+//   }
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     this.matkhau = await bcrypt.hash(this.matkhau, salt);
+//     return next();
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 const NguoiDungModel = mongoose.model("NguoiDung", NguoiDungSchema);
 

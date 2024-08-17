@@ -1,12 +1,42 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel.js"); // Giả sử NguoiDungModel được xuất đúng từ tệp này
+const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel.js");
 const routerAuth = express.Router();
 const nodemailer = require("nodemailer");
-const authMiddleware = require("../config/authMiddleware.js"); // Import middleware
+const authMiddleware = require("../config/authMiddleware.js");
 const crypto = require("crypto");
 
+// Route đăng nhập
+// routerAuth.post("/login", async (req, res) => {
+//   const { email, matkhau } = req.body;
+
+//   try {
+//     // Tìm người dùng bằng email
+//     const NguoiDung = await NguoiDungModel.findOne({ email });
+//     if (!NguoiDung) {
+//       return res.status(400).json({ message: "Người dùng không tồn tại" });
+//     }
+
+//     // Kiểm tra mật khẩu bằng cách so sánh mật khẩu chưa mã hóa với mật khẩu đã mã hóa trong cơ sở dữ liệu
+//     const isMatch = await bcrypt.compare(matkhau, NguoiDung.matkhau);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Sai mật khẩu" });
+//     }
+
+//     // Sinh token JWT
+//     const token = jwt.sign(
+//       { NguoiDungId: NguoiDung._id, loaitaikhoan: NguoiDung.loaitaikhoan },
+//       process.env.JWT_CODE,
+//       { expiresIn: "1h" }
+//     );
+
+//     res.status(200).json({ token });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+// Route đăng nhập
 routerAuth.post("/login", async (req, res) => {
   const { email, matkhau } = req.body;
 
@@ -17,8 +47,8 @@ routerAuth.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Người dùng không tồn tại" });
     }
 
-    // Kiểm tra mật khẩu
-    const isMatch = await bcrypt.compare(matkhau, NguoiDung.matkhau);
+    // Kiểm tra mật khẩu bằng cách so sánh mật khẩu chưa mã hóa với mật khẩu đã mã hóa trong cơ sở dữ liệu
+    const isMatch = matkhau === NguoiDung.matkhau; // So sánh mật khẩu trực tiếp
     if (!isMatch) {
       return res.status(400).json({ message: "Sai mật khẩu" });
     }
@@ -37,6 +67,34 @@ routerAuth.post("/login", async (req, res) => {
 });
 
 // Route đăng ký
+// routerAuth.post("/dangky", async (req, res) => {
+//   const { email, matkhau, ten } = req.body;
+//   const loaitaikhoan = 0;
+
+//   try {
+//     // Kiểm tra nếu email đã tồn tại
+//     const NguoiDungExist = await NguoiDungModel.findOne({ email });
+//     if (NguoiDungExist) {
+//       return res.status(400).json({ message: "Email đã được sử dụng" });
+//     }
+
+//     // Mã hóa mật khẩu
+//     const hashedPassword = await bcrypt.hash(matkhau, 10);
+
+//     // Tạo người dùng mới với mật khẩu đã mã hóa
+//     const newUser = new NguoiDungModel({
+//       ten,
+//       email,
+//       matkhau: hashedPassword,
+//       loaitaikhoan,
+//     });
+//     await newUser.save();
+
+//     res.status(201).json({ message: "Đăng ký thành công" });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 routerAuth.post("/dangky", async (req, res) => {
   const { email, matkhau, ten } = req.body;
   const loaitaikhoan = 0;
@@ -48,14 +106,11 @@ routerAuth.post("/dangky", async (req, res) => {
       return res.status(400).json({ message: "Email đã được sử dụng" });
     }
 
-    // Hash mật khẩu
-    const hashedPassword = await bcrypt.hash(matkhau, 10);
-
-    // Tạo người dùng mới
+    // Tạo người dùng mới mà không mã hóa mật khẩu
     const newUser = new NguoiDungModel({
       ten,
       email,
-      matkhau: hashedPassword,
+      matkhau, // Lưu mật khẩu trực tiếp
       loaitaikhoan,
     });
     await newUser.save();
@@ -78,6 +133,7 @@ routerAuth.get("/profile", authMiddleware, async (req, res) => {
   }
 });
 
+// Thiết lập transporter cho nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -86,6 +142,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Route quên mật khẩu
 routerAuth.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
