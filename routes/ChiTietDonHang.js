@@ -33,7 +33,7 @@ routerChiTietDonHang.get("/:id_donhang", async (req, res) => {
 });
 
 // Thêm chi tiết đơn hàng mới
-routerChiTietDonHang.post("/add", async (req, res) => {
+routerChiTietDonHang.post("/", async (req, res) => {
   const { id_sach, id_donhang, soluong, gia } = req.body;
 
   try {

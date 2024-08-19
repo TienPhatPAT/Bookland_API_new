@@ -8,7 +8,7 @@ const authMiddleware = require("../config/authMiddleware.js");
 const crypto = require("crypto");
 
 routerAuth.post("/dangky", async (req, res) => {
-  const { email, matkhau, ten } = req.body;
+  const { email, matkhau, ten, gioitinh, avt, ngaysinh } = req.body;
   const loaitaikhoan = 0;
 
   try {
@@ -22,8 +22,13 @@ routerAuth.post("/dangky", async (req, res) => {
     const newUser = new NguoiDungModel({
       ten,
       email,
-      matkhau, // Lưu mật khẩu trực tiếp, mã hóa sẽ được thực hiện trong pre-save hook
+      matkhau,
       loaitaikhoan,
+      gioitinh: gioitinh !== undefined ? gioitinh : 0,
+      avt:
+        avt ||
+        "https://i.pinimg.com/736x/c6/e5/65/c6e56503cfdd87da299f72dc416023d4.jpg",
+      ngaysinh: ngaysinh ? new Date(ngaysinh) : null,
     });
     await newUser.save();
 
@@ -32,7 +37,6 @@ routerAuth.post("/dangky", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 routerAuth.post("/login", async (req, res) => {
   const { email, matkhau } = req.body;
 
@@ -55,7 +59,7 @@ routerAuth.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ token });
+    res.status(200).json({ token, id_nguoidung: NguoiDung._id });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

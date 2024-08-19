@@ -6,8 +6,8 @@ const DonHangSchema = new Schema(
   {
     id_nguoidung: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
       required: true,
+      ref: "NguoiDung",
     },
     diachi: {
       type: String,

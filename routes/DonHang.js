@@ -1,6 +1,7 @@
 const express = require("express");
 const DonHangModel = require("../models/DonHang/DonHangModel");
 const ChiTietDonHangModel = require("../models/ChiTietDonHang/ChiTietDonHangModel");
+const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel.js");
 const routerDonHang = express.Router();
 
 // API Để Thêm Đơn Hàng
@@ -47,7 +48,25 @@ routerDonHang.post("/", async (req, res) => {
     res.status(500).json({ status: 0, message: "Thêm đơn hàng thất bại" });
   }
 });
+// API Để Lấy Tất Cả Đơn Hàng
+routerDonHang.get("/", async (req, res) => {
+  try {
+    const donHangs = await DonHangModel.find()
+      .populate("id_nguoidung", "ten")
+      .populate({
+        path: "chitietdonhangs",
+        populate: {
+          path: "id_sach",
+          select: "ten gia",
+        },
+      });
 
+    res.json({ success: true, data: donHangs });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+    res.status(500).json({ success: false, message: "Đã xảy ra lỗi máy chủ" });
+  }
+});
 // API Để Lấy Thông Tin Đơn Hàng
 routerDonHang.get("/:id", async (req, res) => {
   try {

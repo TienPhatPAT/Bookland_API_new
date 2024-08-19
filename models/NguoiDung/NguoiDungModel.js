@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { Schema } = mongoose;
+const moment = require("moment");
 
-function format(value) {
+function formatPhone(value) {
   if (typeof value === "string") {
     value = parseInt(value);
   }
@@ -10,6 +11,10 @@ function format(value) {
     return "0" + value;
   }
   return value;
+}
+
+function formatDate(date) {
+  return moment(date).format("DD/MM/YYYY");
 }
 
 const NguoiDungSchema = new Schema({
@@ -44,14 +49,16 @@ const NguoiDungSchema = new Schema({
   },
   ngaysinh: {
     type: Date,
+    get: formatDate, // Định dạng ngày tháng trước khi trả về
   },
   sdt: {
-    type: String, // Thay đổi từ Number sang String
-    set: format,
+    type: String,
+    set: formatPhone,
   },
   ngaytao: {
     type: Date,
     default: Date.now,
+    get: formatDate, // Định dạng ngày tháng trước khi trả về
   },
   id_gmail: {
     type: String,
@@ -71,6 +78,7 @@ const NguoiDungSchema = new Schema({
     type: Date,
   },
 });
+
 NguoiDungSchema.pre("save", async function (next) {
   if (!this.isModified("matkhau")) {
     return next();
