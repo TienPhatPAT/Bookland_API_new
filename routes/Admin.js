@@ -28,7 +28,12 @@ routerAdmin.get("/:id", async function (req, res, next) {
     }
   } catch (error) {
     console.error("Lỗi khi lấy chi tiết admin:", error);
-    res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
+    res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi",
+      error: error.message, // Hiển thị thông báo lỗi
+      stack: error.stack, // Hiển thị chi tiết stack trace (có thể ẩn trong sản xuất)
+    });
   }
 });
 
@@ -69,8 +74,12 @@ routerAdmin.put("/:id", async function (req, res, next) {
     if (NguoiDung && NguoiDung.loaitaikhoan === 1) {
       await NguoiDungModel.findByIdAndUpdate(id_nguoidung, {
         ten,
-        email,
         matkhau,
+        email,
+        gioitinh,
+        avt,
+        sdt,
+        loaitaikhoan,
       });
       res.json({ status: 1, message: "Sửa admin thành công" });
     } else {

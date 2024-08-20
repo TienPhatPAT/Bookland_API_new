@@ -170,36 +170,36 @@ routerNguoiDung.get("/:id", async function (req, res, next) {
 });
 
 // Thêm người dùng bình thường
-// routerNguoiDung.post("/add", adminMiddleware, async function (req, res, next) {
-//   try {
-//     const { ten, matkhau, email, gioitinh, avt, sdt, loaitaikhoan } = req.body;
+routerNguoiDung.post("/", async function (req, res, next) {
+  try {
+    const { ten, matkhau, email, gioitinh, avt, sdt, loaitaikhoan } = req.body;
 
-//     if (loaitaikhoan !== 0) {
-//       return res
-//         .status(400)
-//         .json({ status: 0, message: "Loại tài khoản phải là người dùng" });
-//     }
+    if (loaitaikhoan !== 0) {
+      return res
+        .status(400)
+        .json({ status: 0, message: "Loại tài khoản phải là người dùng" });
+    }
 
-//     const newNguoiDung = {
-//       ten,
-//       matkhau,
-//       email,
-//       gioitinh,
-//       avt,
-//       sdt,
-//       loaitaikhoan,
-//     };
+    const newNguoiDung = {
+      ten,
+      matkhau,
+      email,
+      gioitinh,
+      avt,
+      sdt,
+      loaitaikhoan,
+    };
 
-//     await NguoiDungModel.create(newNguoiDung);
-//     res.json({ status: 1, message: "Thêm người dùng thành công" });
-//   } catch (err) {
-//     console.error("Lỗi khi thêm người dùng:", err);
-//     res.json({ status: 0, message: "Thêm người dùng thất bại" });
-//   }
-// });
+    await NguoiDungModel.create(newNguoiDung);
+    res.json({ status: 1, message: "Thêm người dùng thành công" });
+  } catch (err) {
+    console.error("Lỗi khi thêm người dùng:", err);
+    res.json({ status: 0, message: "Thêm người dùng thất bại" });
+  }
+});
 
 // Sửa thông tin người dùng bình thường
-routerNguoiDung.put("/:id", adminMiddleware, async function (req, res, next) {
+routerNguoiDung.put("/:id", async function (req, res, next) {
   try {
     const { id } = req.params;
     const { ten, email, matkhau } = req.body;
