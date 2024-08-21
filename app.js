@@ -26,6 +26,7 @@ var createError = require("http-errors");
 var cookieParser = require("cookie-parser");
 
 const mongoose = require("mongoose");
+const routerVNPay = require("./routes/VNpay.js");
 
 mongoose
   .connect(process.env.DB_URL) // Link đến DB_URL trong file .env
@@ -72,7 +73,7 @@ app.use("/api/sachyeuthich", routerSachYeuThich);
 app.use("/api/timkiem", routerTimKiem);
 app.use("/api/luottim", routerLuotTim);
 app.use("/api/thanhtoan", routerThanhToan);
-
+app.use("/api/vnpay", routerVNPay);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
