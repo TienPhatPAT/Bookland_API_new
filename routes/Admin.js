@@ -69,17 +69,14 @@ routerAdmin.post("/", async function (req, res, next) {
 // Sửa thông tin admin
 routerAdmin.put("/:id", async function (req, res, next) {
   try {
-    const { id_nguoidung, ten, email, matkhau } = req.body;
+    const { id_nguoidung, ten, email, matkhau, avt } = req.body;
     const NguoiDung = await NguoiDungModel.findById(id_nguoidung);
     if (NguoiDung && NguoiDung.loaitaikhoan === 1) {
       await NguoiDungModel.findByIdAndUpdate(id_nguoidung, {
         ten,
-        matkhau,
         email,
-        gioitinh,
+        matkhau,
         avt,
-        sdt,
-        loaitaikhoan,
       });
       res.json({ status: 1, message: "Sửa admin thành công" });
     } else {
