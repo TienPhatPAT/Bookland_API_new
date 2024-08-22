@@ -42,13 +42,20 @@ const port = process.env.PORT;
 //middleware
 app.use(express.json());
 app.use(cors());
+// app.use(
+//   cors({
+//     origin: "https://bookland-admin.vercel.app", // Chỉ cho phép yêu cầu từ nguồn này
+//     methods: ["GET", "POST", "PUT", "DELETE"], // Các phương thức được phép
+//     allowedHeaders: ["Content-Type", "Authorization"], // Các header được phép
+//     credentials: true, // Cho phép gửi cookie nếu cần thiết
+//   })
+// );
 
 app.get("/", (req, res) => {
   res.send("API Working");
 });
 
 app.use(logger("dev"));
-// app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
