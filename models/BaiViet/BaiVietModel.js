@@ -3,11 +3,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const BaiVietSchema = new Schema({
-  theloaibaiviet: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "TheLoaiBaiViet",
-    required: true,
-  },
   nguoidung: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "NguoiDung",
