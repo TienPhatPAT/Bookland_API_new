@@ -1,7 +1,7 @@
 const express = require("express");
 const DonHangModel = require("../models/DonHang/DonHangModel");
 const ChiTietDonHangModel = require("../models/ChiTietDonHang/ChiTietDonHangModel");
-const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel.js");
+const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel");
 const routerDonHang = express.Router();
 
 // API Để Thêm Đơn Hàng
@@ -11,12 +11,14 @@ routerDonHang.post("/", async (req, res) => {
       id_nguoidung,
       diachi,
       sdt,
+      gia,
+      shipping,
+      tonggia,
       nguoinhan,
       phuongthucthanhtoan,
       ghichu,
       ngaydathang,
       status,
-      thanhtoan,
       chitietdonhangs, // Dữ liệu chi tiết đơn hàng gửi kèm
     } = req.body;
 
@@ -25,12 +27,14 @@ routerDonHang.post("/", async (req, res) => {
       id_nguoidung,
       diachi,
       sdt,
+      gia,
+      shipping,
+      tonggia,
       nguoinhan,
       phuongthucthanhtoan,
       ghichu,
       ngaydathang,
       status,
-      thanhtoan,
       chitietdonhangs, // Thêm ID chi tiết đơn hàng
     });
 
@@ -48,6 +52,7 @@ routerDonHang.post("/", async (req, res) => {
     res.status(500).json({ status: 0, message: "Thêm đơn hàng thất bại" });
   }
 });
+
 // API Để Lấy Tất Cả Đơn Hàng
 routerDonHang.get("/", async (req, res) => {
   try {
@@ -67,6 +72,7 @@ routerDonHang.get("/", async (req, res) => {
     res.status(500).json({ success: false, message: "Đã xảy ra lỗi máy chủ" });
   }
 });
+
 // API Để Lấy Thông Tin Đơn Hàng
 routerDonHang.get("/:id", async (req, res) => {
   try {
@@ -95,58 +101,85 @@ routerDonHang.get("/:id", async (req, res) => {
 });
 
 // API Để Cập Nhật Đơn Hàng
-routerDonHang.put("/:id", async (req, res) => {
+routerDonHang.post("/", async (req, res) => {
   try {
-    const { id } = req.params;
     const {
+      id_nguoidung,
       diachi,
       sdt,
+      gia,
+      shipping,
+      tonggia,
       nguoinhan,
       phuongthucthanhtoan,
       ghichu,
       ngaydathang,
       status,
-      thanhtoan,
-      chitietdonhangs, // Dữ liệu chi tiết đơn hàng gửi kèm
+      chitietdonhangs,
     } = req.body;
 
-    // Cập nhật thông tin đơn hàng
-    const updatedDonHang = await DonHangModel.findByIdAndUpdate(
-      id,
-      {
-        diachi,
-        sdt,
-        nguoinhan,
-        phuongthucthanhtoan,
-        ghichu,
-        ngaydathang,
-        status,
-        thanhtoan,
-        chitietdonhangs, // Cập nhật ID chi tiết đơn hàng
-      },
-      { new: true }
-    );
+    // Kiểm tra tính hợp lệ của dữ liệu
+    if (
+      !id_nguoidung ||
+      !diachi ||
+      !sdt ||
+      !gia ||
+      !tonggia ||
+      !nguoinhan ||
+      !phuongthucthanhtoan ||
+      !status
+    ) {
+      return res
+        .status(400)
+        .json({ status: 0, message: "Dữ liệu không đầy đủ" });
+    }
 
-    if (updatedDonHang) {
-      // Cập nhật chi tiết đơn hàng để liên kết với đơn hàng
+    // Tạo đơn hàng mới
+    const newDonHang = new DonHangModel({
+      id_nguoidung,
+      diachi,
+      sdt,
+      gia,
+      shipping,
+      tonggia,
+      nguoinhan,
+      phuongthucthanhtoan,
+      ghichu,
+      ngaydathang,
+      status,
+      chitietdonhangs,
+    });
+
+    await newDonHang.save();
+
+    // Cập nhật chi tiết đơn hàng để liên kết với đơn hàng mới
+    if (chitietdonhangs && chitietdonhangs.length > 0) {
       await ChiTietDonHangModel.updateMany(
         { _id: { $in: chitietdonhangs } },
-        { $set: { id_donhang: updatedDonHang._id } }
+        { $set: { id_donhang: newDonHang._id } }
       );
-
-      res.json({
-        status: 1,
-        message: "Cập nhật đơn hàng thành công",
-        data: updatedDonHang,
-      });
-    } else {
-      res
-        .status(404)
-        .json({ status: 0, message: "Không tìm thấy đơn hàng để cập nhật" });
     }
+
+    res.json({ status: 1, message: "Thêm đơn hàng thành công" });
   } catch (err) {
-    console.error("Lỗi khi cập nhật đơn hàng:", err);
-    res.status(500).json({ status: 0, message: "Cập nhật đơn hàng thất bại" });
+    console.error("Lỗi khi thêm đơn hàng:", err);
+
+    // Kiểm tra loại lỗi và trả về thông báo cụ thể
+    if (err.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({
+          status: 0,
+          message: "Dữ liệu không hợp lệ",
+          errors: err.errors,
+        });
+    }
+
+    if (err.name === "CastError") {
+      return res.status(400).json({ status: 0, message: "ID không hợp lệ" });
+    }
+
+    res.status(500).json({ status: 0, message: "Thêm đơn hàng thất bại" });
   }
 });
 

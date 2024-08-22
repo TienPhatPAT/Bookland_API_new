@@ -19,6 +19,21 @@ const ChiTietDonHangSchema = new Schema({
     type: Number,
     required: true,
   },
+  status: {
+    type: String,
+    required: true,
+    enum: ["chờ duyệt", "đã giao hàng", "hủy", "trả hàng"],
+    default: "chờ duyệt",
+  },
+  thanhtoan: {
+    type: String,
+    required: true,
+    enum: ["chưa thanh toán", "đã thanh toán"],
+  },
+  ngaytao: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const ChiTietDonHangModel = mongoose.model(

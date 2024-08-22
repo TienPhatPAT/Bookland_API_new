@@ -44,6 +44,14 @@ const SachSchema = new Schema({
     },
   ],
 });
+// Thêm Virtual để lấy tên tác giả
+SachSchema.virtual("tacgia_ten").get(function () {
+  return this.tacgia ? this.tacgia.ten : "";
+});
+
+// Đảm bảo rằng các Virtuals được thêm vào khi chuyển đổi tài liệu sang JSON hoặc Object
+SachSchema.set("toObject", { virtuals: true });
+SachSchema.set("toJSON", { virtuals: true });
 
 const SachModel = mongoose.model("Sach", SachSchema);
 module.exports = SachModel;

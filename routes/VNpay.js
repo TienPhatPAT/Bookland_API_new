@@ -79,7 +79,6 @@ routerVNPay.get("/vnpay_return", (req, res) => {
     res.status(400).json({ success: false, message: "Chữ ký không hợp lệ" });
   }
 });
-
 // Hàm sắp xếp object để tạo chữ ký đúng theo yêu cầu của VNPay
 function sortObject(obj) {
   const sorted = {};

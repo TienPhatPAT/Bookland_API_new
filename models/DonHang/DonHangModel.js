@@ -17,14 +17,27 @@ const DonHangSchema = new Schema(
       type: String,
       required: true,
     },
+    gia: {
+      type: Number,
+      required: true,
+    },
+    shipping: {
+      type: Number,
+      default: "30000",
+    },
+    tonggia: {
+      type: Number,
+      required: true,
+    },
+
     nguoinhan: {
       type: String,
       required: true,
     },
     phuongthucthanhtoan: {
-      type: Number,
+      type: String,
       required: true,
-      enum: [0, 1], // 0: tiền mặt, 1: ngân hàng
+      enum: ["tiền mặt", "ngân hàng"],
     },
     ghichu: {
       type: String,
@@ -35,15 +48,10 @@ const DonHangSchema = new Schema(
       default: Date.now,
     },
     status: {
-      type: Number,
+      type: String,
       required: true,
-      enum: [0, 1, 2, 3, 4], // 0: chờ duyệt, 1: đang giao hàng, 2: đã giao hàng, 3: hủy, 4: trả hàng
-      default: "0",
-    },
-    thanhtoan: {
-      type: Number,
-      required: true,
-      enum: [0, 1], // 0: chưa thanh toán, 1: đã thanh toán
+      enum: ["chờ duyệt", "đã giao hàng", "hủy", "trả hàng"],
+      default: "chờ duyệt",
     },
     chitietdonhangs: [
       {

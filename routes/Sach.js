@@ -173,7 +173,8 @@ routerSach.get("/:id", async (req, res, next) => {
     const { id } = req.params;
     const sach = await SachModel.findById(id)
       .populate("tacgia", "ten")
-      .populate("theloaisach", "ten");
+      .populate("theloaisach", "ten")
+      .lean();
 
     if (!sach) {
       return res
