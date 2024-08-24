@@ -47,6 +47,7 @@ routerSach.post("/", async (req, res, next) => {
         message: "Không tìm thấy thông tin thể loại sách",
       });
     }
+
     const sachExists = await SachModel.findOne({ ten, tacgia });
     if (sachExists) {
       return res.status(400).json({
@@ -56,26 +57,30 @@ routerSach.post("/", async (req, res, next) => {
     }
 
     const newSach = new SachModel({
-      tacgia: tacgia,
-      nxb: nxb,
-      img: img,
-      mota: mota,
-      ngayxuatban: ngayxuatban,
-      ten: ten,
-      luotxem: luotxem,
-      gia: gia,
-      giacu: giacu,
-      ngonngu: ngonngu,
-      hien_thi: hien_thi,
-      theloaisach: theloaisach,
+      tacgia,
+      nxb,
+      img,
+      mota,
+      ngayxuatban,
+      ten,
+      luotxem,
+      gia,
+      giacu,
+      ngonngu,
+      hien_thi,
+      theloaisach,
     });
 
     await newSach.save();
 
-    res.json({ status: 1, message: "Thêm sách thành công" });
+    res
+      .status(201)
+      .json({ status: 1, message: "Thêm sách thành công", data: newSach });
   } catch (err) {
     console.error("Lỗi khi thêm sách:", err);
-    res.status(500).json({ status: 0, message: "Thêm sách thất bại" });
+    res
+      .status(500)
+      .json({ status: 0, message: "Thêm sách thất bại", error: err.message });
   }
 });
 
@@ -130,7 +135,9 @@ routerSach.put("/:id", async (req, res, next) => {
     }
   } catch (err) {
     console.error("Lỗi khi sửa sách:", err);
-    res.status(500).json({ status: 0, message: "Sửa sách thất bại" });
+    res
+      .status(500)
+      .json({ status: 0, message: "Sửa sách thất bại", error: err.message });
   }
 });
 
@@ -141,7 +148,7 @@ routerSach.delete("/:id", async (req, res, next) => {
     const sach = await SachModel.findByIdAndDelete(id);
 
     if (sach) {
-      res.json({ status: 1, message: "Xóa sách thành công" });
+      res.json({ status: 1, message: "Xóa sách thành công", data: sach });
     } else {
       res
         .status(404)
@@ -149,7 +156,9 @@ routerSach.delete("/:id", async (req, res, next) => {
     }
   } catch (err) {
     console.error("Lỗi khi xóa sách:", err);
-    res.status(500).json({ status: 0, message: "Xóa sách thất bại" });
+    res
+      .status(500)
+      .json({ status: 0, message: "Xóa sách thất bại", error: err.message });
   }
 });
 
@@ -163,7 +172,13 @@ routerSach.get("/", async (req, res, next) => {
     res.json({ success: true, data: listSach });
   } catch (error) {
     console.error("Lỗi khi lấy danh sách sách:", error);
-    res.status(500).json({ success: false, message: "Đã xảy ra lỗi máy chủ" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Đã xảy ra lỗi máy chủ",
+        error: error.message,
+      });
   }
 });
 
@@ -174,7 +189,7 @@ routerSach.get("/:id", async (req, res, next) => {
     const sach = await SachModel.findById(id)
       .populate("tacgia", "ten")
       .populate("theloaisach", "ten")
-      .lean();
+      .lean(); // Sử dụng .lean() nếu không cần các phương thức Mongoose
 
     if (!sach) {
       return res
@@ -185,7 +200,13 @@ routerSach.get("/:id", async (req, res, next) => {
     res.json({ success: true, data: sach });
   } catch (error) {
     console.error("Lỗi khi lấy thông tin sách:", error);
-    res.status(500).json({ success: false, message: "Đã xảy ra lỗi máy chủ" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Đã xảy ra lỗi máy chủ",
+        error: error.message,
+      });
   }
 });
 
