@@ -17,6 +17,7 @@ const routerSachYeuThich = require("./routes/SachYeuThich.js");
 const routerTimKiem = require("./routes/TimKiem.js");
 const routerLuotTim = require("./routes/LuotTim.js");
 const routerThanhToan = require("./routes/Thanhtoan.js");
+const router = require("./routes/Orders.js");
 var express = require("express");
 var path = require("path");
 
@@ -80,6 +81,7 @@ app.use("/api/sachyeuthich", routerSachYeuThich);
 app.use("/api/timkiem", routerTimKiem);
 app.use("/api/luottim", routerLuotTim);
 app.use("/api/thanhtoan", routerThanhToan);
+app.use("/api/order", router);
 app.use("/api/vnpay", routerVNPay);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
