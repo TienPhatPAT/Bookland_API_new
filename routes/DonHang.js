@@ -166,13 +166,11 @@ routerDonHang.post("/", async (req, res) => {
 
     // Kiểm tra loại lỗi và trả về thông báo cụ thể
     if (err.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({
-          status: 0,
-          message: "Dữ liệu không hợp lệ",
-          errors: err.errors,
-        });
+      return res.status(400).json({
+        status: 0,
+        message: "Dữ liệu không hợp lệ",
+        errors: err.errors,
+      });
     }
 
     if (err.name === "CastError") {
