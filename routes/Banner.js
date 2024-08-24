@@ -1,5 +1,6 @@
 const express = require("express");
 const BannerModel = require("../models/Banner/BannerModel.js");
+const moment = require("moment");
 
 const routerBanner = express.Router();
 
@@ -7,7 +8,13 @@ const routerBanner = express.Router();
 routerBanner.get("/", async (req, res) => {
   try {
     const banners = await BannerModel.find();
-    res.json({ success: true, data: banners });
+    // Chuyển đổi định dạng ngày tháng cho từng banner
+    const formattedBanners = banners.map((banner) => ({
+      ...banner._doc,
+      ngaybatdau: moment(banner.ngaybatdau).format("DD/MM/YYYY"),
+      ngayketthuc: moment(banner.ngayketthuc).format("DD/MM/YYYY"),
+    }));
+    res.json({ success: true, data: formattedBanners });
   } catch (error) {
     console.error("Lỗi khi lấy danh sách banner:", error);
     res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
@@ -24,7 +31,13 @@ routerBanner.get("/:id", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Banner không tồn tại" });
     }
-    res.json({ success: true, data: banner });
+    // Chuyển đổi định dạng ngày tháng cho banner
+    const formattedBanner = {
+      ...banner._doc,
+      ngaybatdau: moment(banner.ngaybatdau).format("DD/MM/YYYY"),
+      ngayketthuc: moment(banner.ngayketthuc).format("DD/MM/YYYY"),
+    };
+    res.json({ success: true, data: formattedBanner });
   } catch (error) {
     console.error("Lỗi khi lấy thông tin banner:", error);
     res.status(500).json({ success: false, message: "Đã xảy ra lỗi" });
@@ -39,8 +52,8 @@ routerBanner.post("/", async (req, res) => {
     const newBanner = new BannerModel({
       url,
       image,
-      ngaybatdau,
-      ngayketthuc,
+      ngaybatdau: moment(ngaybatdau, "DD/MM/YYYY").toDate(), // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
+      ngayketthuc: moment(ngayketthuc, "DD/MM/YYYY").toDate(), // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
       uutien,
       hien_thi,
     });
@@ -60,13 +73,19 @@ routerBanner.post("/", async (req, res) => {
 // Sửa thông tin một banner
 routerBanner.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { url, image, luotclick, ngaybatdau, ngayketthuc, uutien, hien_thi } =
-    req.body;
+  const { url, image, ngaybatdau, ngayketthuc, uutien, hien_thi } = req.body;
 
   try {
     const updatedBanner = await BannerModel.findByIdAndUpdate(
       id,
-      { url, image, luotclick, ngaybatdau, ngayketthuc, uutien, hien_thi },
+      {
+        url,
+        image,
+        ngaybatdau: moment(ngaybatdau, "DD/MM/YYYY").toDate(), // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
+        ngayketthuc: moment(ngayketthuc, "DD/MM/YYYY").toDate(), // Chuyển đổi chuỗi ngày tháng thành đối tượng Date
+        uutien,
+        hien_thi,
+      },
       { new: true }
     );
 
@@ -76,10 +95,16 @@ routerBanner.put("/:id", async (req, res) => {
         .json({ success: false, message: "Banner không tồn tại" });
     }
 
+    // Chuyển đổi định dạng ngày tháng cho banner đã cập nhật
+    const formattedBanner = {
+      ...updatedBanner._doc,
+      ngaybatdau: moment(updatedBanner.ngaybatdau).format("DD/MM/YYYY"),
+      ngayketthuc: moment(updatedBanner.ngayketthuc).format("DD/MM/YYYY"),
+    };
     res.json({
       success: true,
       message: "Sửa banner thành công",
-      data: updatedBanner,
+      data: formattedBanner,
     });
   } catch (error) {
     console.error("Lỗi khi sửa banner:", error);
