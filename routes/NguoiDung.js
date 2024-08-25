@@ -222,7 +222,7 @@ routerNguoiDung.put("/:id", async function (req, res, next) {
 });
 
 // Xóa người dùng bình thường
-routerNguoiDung.delete("/:id", adminMiddleware, async (req, res) => {
+routerNguoiDung.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
