@@ -133,7 +133,7 @@
 const express = require("express");
 const NguoiDungModel = require("../models/NguoiDung/NguoiDungModel.js");
 const adminMiddleware = require("../config/adminMiddleware.js");
-
+const bcrypt = require("bcrypt");
 const routerNguoiDung = express.Router();
 
 // Lấy danh sách người dùng bình thường
@@ -208,14 +208,15 @@ routerNguoiDung.put("/:id", async function (req, res, next) {
     const NguoiDung = await NguoiDungModel.findById(id);
 
     if (NguoiDung && NguoiDung.loaitaikhoan === 0) {
-      // Nếu có mật khẩu mới, mã hóa nó trước khi cập nhật
       let updatedFields = { ten, email };
+
       if (matkhau) {
+        console.log("Mật khẩu trước khi mã hóa:", matkhau); // In ra mật khẩu trước khi mã hóa
         const hashedPassword = await bcrypt.hash(matkhau, 10);
+        console.log("Mật khẩu sau khi mã hóa:", hashedPassword); // In ra mật khẩu sau khi mã hóa
         updatedFields.matkhau = hashedPassword;
       }
 
-      // Cập nhật thông tin người dùng
       await NguoiDungModel.findByIdAndUpdate(id, updatedFields);
       res.json({ status: 1, message: "Sửa người dùng thành công" });
     } else {
