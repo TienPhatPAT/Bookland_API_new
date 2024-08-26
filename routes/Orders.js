@@ -38,15 +38,17 @@ router.post("/", async (req, res) => {
     res.status(200).json({
       status: 0,
       data: {
-        message: "",
+        message: "Tạo đơn hàng thành công",
         data: newOrder,
       },
     });
   } catch (error) {
+    console.error("Error occurred while creating order:", error);
     res.status(500).json({
       status: 0,
       data: {
         message: "Server Error",
+        error: error.message,
         data: {},
       },
     });
@@ -59,15 +61,17 @@ router.get("/", async (req, res) => {
     res.status(200).json({
       status: 0,
       data: {
-        message: "Get order success",
+        message: "Lấy danh sách đơn hàng thành công",
         data: ordersList,
       },
     });
   } catch (error) {
+    console.error("Error occurred while fetching orders:", error);
     res.status(500).json({
       status: 0,
       data: {
         message: "Server Error",
+        error: error.message,
         data: [],
       },
     });
@@ -78,52 +82,55 @@ router.patch("/:id", async (req, res) => {
   try {
     const idOrder = req.params.id;
     const status = req.query.status;
-    if (!idOrder)
-      res.status(402).json({
+
+    if (!idOrder) {
+      return res.status(402).json({
         status: 0,
         data: {
           message: "Id đơn hàng không được trống",
-          data: ordersList,
-        },
-      });
-    if (!status) {
-      res.status(402).json({
-        status: 0,
-        data: {
-          message: "Trạng thái đơn hàng không được trống",
-          data: ordersList,
         },
       });
     }
+
+    if (!status) {
+      return res.status(402).json({
+        status: 0,
+        data: {
+          message: "Trạng thái đơn hàng không được trống",
+        },
+      });
+    }
+
     const orderUpdate = await Order.findOneAndUpdate(
-      {
-        _id: idOrder,
-      },
+      { _id: idOrder },
       { status },
       { new: true }
     );
+
     if (!orderUpdate) {
-      res.status(402).json({
+      return res.status(404).json({
         status: 0,
         data: {
-          message: "Order not found",
+          message: "Không tìm thấy đơn hàng",
           data: null,
         },
       });
     }
+
     res.status(200).json({
       status: 0,
       data: {
-        message: "Update order success",
+        message: "Cập nhật đơn hàng thành công",
         data: orderUpdate,
       },
     });
   } catch (error) {
-    console.log("Check Error: ", error);
+    console.error("Error occurred while updating order:", error);
     res.status(500).json({
       status: 0,
       data: {
         message: "Server Error",
+        error: error.message,
         data: null,
       },
     });
