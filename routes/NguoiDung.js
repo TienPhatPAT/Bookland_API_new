@@ -204,9 +204,19 @@ routerNguoiDung.put("/:id", async function (req, res, next) {
     const { id } = req.params;
     const { ten, email, matkhau } = req.body;
 
+    // Tìm người dùng theo ID
     const NguoiDung = await NguoiDungModel.findById(id);
+
     if (NguoiDung && NguoiDung.loaitaikhoan === 0) {
-      await NguoiDungModel.findByIdAndUpdate(id, { ten, email, matkhau });
+      // Nếu có mật khẩu mới, mã hóa nó trước khi cập nhật
+      let updatedFields = { ten, email };
+      if (matkhau) {
+        const hashedPassword = await bcrypt.hash(matkhau, 10);
+        updatedFields.matkhau = hashedPassword;
+      }
+
+      // Cập nhật thông tin người dùng
+      await NguoiDungModel.findByIdAndUpdate(id, updatedFields);
       res.json({ status: 1, message: "Sửa người dùng thành công" });
     } else {
       res.status(404).json({

@@ -46,13 +46,12 @@ routerAuth.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Người dùng không tồn tại" });
     }
 
-    // So sánh mật khẩu chưa mã hóa với mật khẩu mã hóa trong cơ sở dữ liệu
+    // So sánh mật khẩu đã mã hóa
     const isMatch = await bcrypt.compare(matkhau, NguoiDung.matkhau);
     if (!isMatch) {
       return res.status(400).json({ message: "Sai mật khẩu" });
     }
 
-    // Sinh token JWT
     const token = jwt.sign(
       { NguoiDungId: NguoiDung._id, loaitaikhoan: NguoiDung.loaitaikhoan },
       process.env.JWT_CODE,
@@ -64,6 +63,7 @@ routerAuth.post("/login", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 // Route lấy thông tin người dùng
 routerAuth.get("/profile", authMiddleware, async (req, res) => {
   try {
@@ -100,7 +100,7 @@ routerAuth.post("/forgot-password", async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const resetUrl = `http://${req.headers.host}/reset-password/${token}`;
+    const resetUrl = `https://bookland-website.vercel.app/reset-password/${token}`;
     const mailOptions = {
       from: process.env.EMAIL,
       to: user.email,
@@ -114,8 +114,10 @@ routerAuth.post("/forgot-password", async (req, res) => {
 
     transporter.sendMail(mailOptions, (err) => {
       if (err) {
+        console.error("Lỗi khi gửi email:", err);
         return res.status(500).json({ message: "Không thể gửi email" });
       }
+      console.log("Email đã gửi:", info.response);
       res.status(200).json({ message: "Email đặt lại mật khẩu đã được gửi" });
     });
   } catch (error) {
@@ -140,6 +142,7 @@ routerAuth.post("/reset-password/:token", async (req, res) => {
       });
     }
 
+    // Mã hóa mật khẩu mới
     user.matkhau = await bcrypt.hash(matkhau, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
