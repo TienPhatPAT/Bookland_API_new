@@ -63,7 +63,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // app.use("/api/add, routerSach");
-// app.use("/api/admin", routerAdmin);
+app.use("/api/admin", routerAdmin);
 app.use("/api/nguoidung", routerNguoiDung);
 app.use("/api/sach", routerSach);
 app.use("/api/chitietsach", routerSachDetail);
