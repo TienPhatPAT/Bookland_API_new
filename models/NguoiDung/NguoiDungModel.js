@@ -60,12 +60,6 @@ const NguoiDungSchema = new Schema({
     default: Date.now,
     get: formatDate, // Định dạng ngày tháng trước khi trả về
   },
-  id_gmail: {
-    type: String,
-  },
-  id_facebook: {
-    type: String,
-  },
   id_hienthi: {
     type: Boolean,
     default: true,
