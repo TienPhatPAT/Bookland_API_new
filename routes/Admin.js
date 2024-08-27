@@ -86,7 +86,10 @@ routerAdmin.put("/:id", async function (req, res, next) {
       });
     }
   } catch (err) {
-    res.json({ status: 0, message: "Sửa admin thất bại" });
+    console.error(err); // Ghi lại lỗi vào console
+    res
+      .status(500)
+      .json({ status: 0, message: "Sửa admin thất bại", error: err.message });
   }
 });
 
